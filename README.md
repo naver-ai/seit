@@ -20,7 +20,7 @@ We need billion-scale images to achieve more generalizable and ground-breaking v
 
 ### Training
 #### Downloading datasets
-- The ImageNet-1k token datasets can be downloaded from [here]()
+- The ImageNet-1k token datasets can be downloaded from [here](https://github.com/naver-ai/seit/releases)
   - The tar file contains all the files required to train the ViT model; tokens, codebook and pre-defined token-synonym dictionary.
   - Download the file and place the extracted files under same directory for convinience (we will call it to DATA_DIR.)
   
