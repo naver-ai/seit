@@ -37,7 +37,7 @@ def get_args_parser():
     # Tokenizer parameters
     parser.add_argument('--tokenizer-path', default='weights/tokenizer.ckpt', type=str, metavar='MODEL',
                         help='path to tokenizer weight')
-h    parser.add_argument('--tokenizer-code-path', type=str, metavar='MODEL',
+    parser.add_argument('--tokenizer-code-path', type=str, metavar='MODEL',
                         help='path to tokenizer code (can be cloned from https://github.com/thuanz123/enhancing-transformers.git)')
     parser.add_argument('--tokenizer-input-size', default=256, type=int, help='input image size for tokenizer')
 
