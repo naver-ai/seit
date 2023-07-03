@@ -43,7 +43,7 @@ OMP_NUM_THREADS=1 python -m torch.distributed.launch --nproc_per_node=8 --use_en
   
 ### Evaluation
 #### Preparing pre-trained weights
-- The pre-trained weights of Tokenizer and ViT models can be downloaded from [here]().
+- The pre-trained weights of Tokenizer and ViT models can be downloaded from [here](https://github.com/naver-ai/seit/releases/tag/v0.0).
   - Place the extracted files to under same directory for convinence (we will call it to WEIGHT_DIR.)
 - The tokenizer source code is required to load the tokenizer weight (can be downloaded from [here](https://github.com/thuanz123/enhancing-transformers.git)).
 
