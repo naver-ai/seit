@@ -1,4 +1,4 @@
-# SeiT: Storage-efficient Vision Training
+# SeiT: Storage-efficient Vision Training (ICCV 2023)
 
 Official Pytorch implementation of SeiT | [Paper](https://arxiv.org/abs/2303.11114)
 
@@ -70,11 +70,11 @@ Also, we are heavily inspired by ViT-VQGAN: [thuanz123/enhancing-transformers(un
 ## Citation
 
 ```
-@article{park2023seit,
+@inproceedings{park2023seit,
     title={SeiT: Storage-Efficient Vision Training with Tokens Using 1% of Pixel Storage},
     author={Park, Song and Chun, Sanghyuk and Heo, Byeongho and Kim, Wonjae and Yun, Sangdoo},
     year={2023},
-    journal={arXiv preprint arXiv:2303.11114},
+    booktitle={International Conference on Computer Vision (ICCV)},
 }
 ```
 
