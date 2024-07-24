@@ -1,11 +1,12 @@
 # Storage-efficient Vision Training
 
-_This repository contains PyTorch training code and pretrained models for the following papers:_
+This repository contains PyTorch training code and pretrained models for the following papers:
 
 > [**SeiT**](./README_seit.md) : __Storage-efficient Vision Training, ICCV 2023.__
 
 > [**SeiT++**](./README_seit++.md) : __Masked Token Modeling Improves Storage-efficient Training, ECCV 2024.__
 
+If you find this repository useful, please consider giving a star ⭐ and cite the relevant papers.
 
 ## Citation
 
