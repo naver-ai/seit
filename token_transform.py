@@ -39,12 +39,55 @@ def build_token_transform(is_train, args):
         return None
 
 
-def build_transform(is_train, args):
+def build_color_transform(is_train, args):
+    if is_train:
+        color_t = []
+        color_prob = []
+        if args.token_noise_prob:
+            color_t.append(Noise(scale=args.token_noise_scale, std=args.token_noise_std))
+            color_prob.append(args.token_noise_prob)
+        if args.token_coloradapt_prob:
+            color_t.append(ColorAdapt())
+            color_prob.append(args.token_coloradapt_prob)
+
+        if color_t:
+            color_t.append(nn.Identity())
+            color_prob.append(1-sum(color_prob))
+            return transforms.RandomChoice(color_t, color_prob)
+        else:
+            return None
+
+    else:
+        return None
+
+
+def build_geo_transform(is_tokenadapt, args):
+    input_size = args.input_size // args.token_patch_size
+    t = []
+    if is_tokenadapt:
+        t.append(transforms.RandomHorizontalFlip())
+
+        t.append(transforms.RandomApply(
+            [Rotate(30), TranslateX(0.2), TranslateY(0.2), ShearX(15), ShearY(15)]
+        ))
+
+        t.append(RRC(size=input_size * 2, scale=(args.rrc_ratio, 1.0)))
+    else:
+        t.append(RRC(size=input_size, scale=(args.rrc_ratio, 1.0)))
+
+    return transforms.Compose(t)
+
+
+def build_basic_transform(is_train, args):
     input_size = args.input_size // args.token_patch_size
 
     if is_train:
         if args.src:
             t = [RC(size=input_size)]
+
+        elif hasattr(args, "rrc") and not args.rrc:
+            t = []
+
         else:
             t = [RRC(size=input_size, scale=(args.rrc_ratio, 1.0))]
 
@@ -58,12 +101,7 @@ def build_codebook(args, is_train=True):
     codebook = torch.load(args.codebook_path).cpu()
 
     if is_train:
-        modules = [Codebook(codebook)]
-
-        if args.token_noise_prob:
-            modules += [Noise(prob=args.token_noise_prob, scale=args.token_noise_scale, std=args.token_noise_std)]
-
-        return nn.Sequential(*modules), codebook.shape[0]
+        return Codebook(codebook), codebook.shape[0]
 
     else:
 
@@ -305,3 +343,90 @@ class RC(nn.Module):
     def __repr__(self) -> str:
         format_string = self.__class__.__name__ + f"(size={self.size})"
         return format_string
+
+
+class ColorAdapt(nn.Module):
+    def __init__(self, prob=0.5):
+        super().__init__()
+        self.prob = prob
+
+    def forward(self, x):
+        B, C, H, W = x.shape
+
+        x_ca = x.clone()
+
+        x_mu = x_ca.mean(dim=(2, 3), keepdim=True)
+        x_std = x_ca.std(dim=(2, 3), keepdim=True)
+        x_mu2 = x_ca.flip(0).mean(dim=(2, 3), keepdim=True)
+        x_std2 = x_ca.flip(0).std(dim=(2, 3), keepdim=True)
+
+        x_ca = (x_ca - x_mu) / x_std
+        x_ca = x_ca * x_std2 + x_mu2
+
+        ca_ids = torch.randperm(B)[:int(B * self.prob)]
+        x[ca_ids] = x_ca[ca_ids]
+
+        return x
+
+    def __repr__(self):
+        return self.__class__.__name__ + f"(prob={self.prob})"
+
+
+class Rotate(nn.Module):
+    def __init__(self, degrees, p=0.5):
+        super().__init__()
+        self.tf = transforms.RandomAffine(degrees=degrees, interpolation=2)
+        self.p = p
+
+    def forward(self, x):
+        if torch.rand(1) < self.p:
+            return self.tf(x)
+        return x
+
+
+class TranslateX(nn.Module):
+    def __init__(self, value, p=0.5):
+        super().__init__()
+        self.tf = transforms.RandomAffine(degrees=0, translate=[value, 0], interpolation=2)
+        self.p = p
+
+    def forward(self, x):
+        if torch.rand(1) < self.p:
+            return self.tf(x)
+        return x
+
+
+class TranslateY(nn.Module):
+    def __init__(self, value, p=0.5):
+        super().__init__()
+        self.tf = transforms.RandomAffine(degrees=0, translate=[0, value], interpolation=2)
+        self.p = p
+
+    def forward(self, x):
+        if torch.rand(1) < self.p:
+            return self.tf(x)
+        return x
+
+
+class ShearX(nn.Module):
+    def __init__(self, value, p=0.5):
+        super().__init__()
+        self.tf = transforms.RandomAffine(degrees=0, shear=[0, value], interpolation=2)
+        self.p = p
+
+    def forward(self, x):
+        if torch.rand(1) < self.p:
+            return self.tf(x)
+        return x
+
+
+class ShearY(nn.Module):
+    def __init__(self, value, p=0.5):
+        super().__init__()
+        self.tf = transforms.RandomAffine(degrees=0, shear=[0, 0, 0, value], interpolation=2)
+        self.p = p
+
+    def forward(self, x):
+        if torch.rand(1) < self.p:
+            return self.tf(x)
+        return x

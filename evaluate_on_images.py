@@ -10,12 +10,12 @@ import torch.backends.cudnn as cudnn
 from torchvision import transforms
 from torchvision.datasets.folder import ImageFolder
 
-from engine import tokenize_and_evaluate
+from engine_seit import tokenize_and_evaluate
 from token_transform import build_codebook, CC
 
 from timm.models import create_model
 import models
-import utils
+import util.misc as misc
 
 import warnings
 warnings.filterwarnings("ignore", message="Argument interpolation should be of type InterpolationMode instead of int. Please, use InterpolationMode enum.")
@@ -67,14 +67,14 @@ def get_args_parser():
 
 
 def main(args):
-    utils.init_distributed_mode(args)
+    misc.init_distributed_mode(args)
 
     print(args)
 
     device = torch.device(args.device)
 
     # fix the seed for reproducibility
-    seed = args.seed + utils.get_rank()
+    seed = args.seed + misc.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
     # random.seed(seed)
@@ -97,8 +97,8 @@ def main(args):
     dataset = ImageFolder(args.data_path, transform=transform)
 
     if True:  # args.distributed:
-        num_tasks = utils.get_world_size()
-        global_rank = utils.get_rank()
+        num_tasks = misc.get_world_size()
+        global_rank = misc.get_rank()
 
         if args.dist_eval:
             if len(dataset) % num_tasks != 0:

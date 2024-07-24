@@ -7,7 +7,7 @@ import numpy as np
 
 import torch
 
-from token_transform import build_token_transform, build_transform
+from token_transform import build_token_transform, build_basic_transform
 
 
 def build_dataset(is_train, num_tokens, args):
@@ -20,7 +20,7 @@ def build_dataset(is_train, num_tokens, args):
         label_file = args.val_label_file
 
     token_transform = build_token_transform(is_train, args)
-    transform = build_transform(is_train, args)
+    transform = build_basic_transform(is_train, args)
 
     dataset = TokenDataset(token_file=token_file, label_file=label_file, num_tokens=num_tokens, token_transform=token_transform, transform=transform)
     nb_classes = 1000

@@ -27,14 +27,14 @@ We need billion-scale images to achieve more generalizable and ground-breaking v
 #### Training examples
 - We used 8 V100 GPUs to train ViT-B with ImageNet-1k Tokens.
 ```
-OMP_NUM_THREADS=1 python -m torch.distributed.launch --nproc_per_node=8 --use_env main.py \
+OMP_NUM_THREADS=1 python -m torch.distributed.launch --nproc_per_node=8 --use_env main_seit.py \
     --model deit_base_token_32 \
-    --codebook-path DATA_DIR/codebook.ckpt \
-    --train-token-file DATA_DIR/imagenet1k-train-token.data.bin.gz \
-    --train-label-file DATA_DIR/imagenet1k-train-label.txt \
-    --val-token-file DATA_DIR/imagenet1k-val-token.data.bin.gz \
-    --val-label-file DATA_DIR/imagenet1k-val-label.txt \
-    --token-synonym-dict DATA_DIR/synonyms.json \
+    --codebook-path $DATA_DIR/codebook.ckpt \
+    --train-token-file $DATA_DIR/imagenet1k-train-token.data.bin.gz \
+    --train-label-file $DATA_DIR/imagenet1k-train-label.txt \
+    --val-token-file $DATA_DIR/imagenet1k-val-token.data.bin.gz \
+    --val-label-file $DATA_DIR/imagenet1k-val-label.txt \
+    --token-synonym-dict $DATA_DIR/synonyms.json \
     --output_dir path/to/save \
     --batch-size 128 \
     --dist-eval
